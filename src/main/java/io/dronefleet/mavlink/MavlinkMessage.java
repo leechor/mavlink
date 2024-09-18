@@ -2,6 +2,8 @@ package io.dronefleet.mavlink;
 
 import io.dronefleet.mavlink.protocol.MavlinkPacket;
 
+import java.util.Objects;
+
 /**
  * Represents a Mavlink message. The contents of this class are sufficient for a Mavlink1 message.
  * See {@link Mavlink2Message} for the Mavlink2 message DTO, which inherits from this class.
@@ -56,13 +58,19 @@ public class MavlinkMessage<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MavlinkMessage<?> that = (MavlinkMessage<?>) o;
 
-        if (packet != null ? !packet.equals(that.packet) : that.packet != null) return false;
-        return payload != null ? payload.equals(that.payload) : that.payload == null;
+        if (!Objects.equals(packet, that.packet)) {
+            return false;
+        }
+        return Objects.equals(payload, that.payload);
     }
 
     @Override

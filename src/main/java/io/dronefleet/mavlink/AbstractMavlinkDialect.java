@@ -9,11 +9,11 @@ public class AbstractMavlinkDialect implements MavlinkDialect {
 
     private final String name;
     private final List<MavlinkDialect> dependencies;
-    private final Map<Integer, Class> messages;
+    private final Map<Integer, Class<?>> messages;
 
     public AbstractMavlinkDialect(
             String name,
-            List<MavlinkDialect> dependencies, Map<Integer, Class> messages) {
+            List<MavlinkDialect> dependencies, Map<Integer, Class<?>> messages) {
         this.name = name;
         this.dependencies = dependencies;
         this.messages = messages;
@@ -25,12 +25,12 @@ public class AbstractMavlinkDialect implements MavlinkDialect {
     }
 
     @Override
-    public Class resolve(int messageId) {
+    public Class<?> resolve(int messageId) {
         if (messages.containsKey(messageId)) {
             return messages.get(messageId);
         } else {
             for (MavlinkDialect dependency : dependencies) {
-                Class result = dependency.resolve(messageId);
+                Class<?> result = dependency.resolve(messageId);
                 if (result != null) {
                     return result;
                 }
@@ -54,7 +54,7 @@ public class AbstractMavlinkDialect implements MavlinkDialect {
     }
 
     @Override
-    public List<Class> messageTypes() {
+    public List<Class<?>> messageTypes() {
         return Stream.concat(
                 messages.values().stream(),
                 dependencies.stream()

@@ -19,7 +19,7 @@ public interface MavlinkDialect {
      * @param messageId The ID of the message to resolve.
      * @return The class of the message of the specified ID.
      */
-    Class resolve(int messageId);
+    Class<?> resolve(int messageId);
 
     /**
      * Checks whether this dialect supports the message of the specified ID.
@@ -33,5 +33,5 @@ public interface MavlinkDialect {
     /**
      * Returns a list of all of the message types supported by this dialect.
      */
-    List<Class> messageTypes();
+    List<Class<?>> messageTypes();
 }
