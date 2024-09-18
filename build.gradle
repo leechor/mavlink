@@ -22,7 +22,7 @@ generateDialect {
 sourceSets.main.java.srcDirs += genSrc
 
 dependencies {
-    compile project('mavlink-protocol')
+    implementation project(':mavlink-protocol')
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
