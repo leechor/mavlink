@@ -67,7 +67,7 @@ public class EnumConstantGenerator {
         StringBuilder javadoc = new StringBuilder();
         javadoc.append(parentPackage.processJavadoc(description));
 
-        if (parameters.size() > 0) {
+        if (!parameters.isEmpty()) {
             String parameterJavadoc = parameters.stream()
                     .map(p -> String.format("  <dt>param%d</dt>\n  <dd>%s</dd>",
                             p.getIndex(),

@@ -1,5 +1,6 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,12 +112,6 @@ public class MavlinkTypeDef {
 
     @Override
     public String toString() {
-        return "MavlinkTypeDef{" +
-                "originalType='" + originalType + '\'' +
-                ", convertedType='" + convertedType + '\'' +
-                ", typeLength=" + typeLength +
-                ", arrayLength=" + arrayLength +
-                ", wireLength=" + wireLength +
-                '}';
+        return MessageFormat.format("MavlinkTypeDef'{'originalType=''{0}'', convertedType=''{1}'', typeLength={2}, arrayLength={3}, wireLength={4}'}'", originalType, convertedType, typeLength, arrayLength, wireLength);
     }
 }

@@ -1,5 +1,8 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
+import java.util.Objects;
+
 public class MavlinkParamDef {
     private final int index;
     private final String description;
@@ -25,7 +28,7 @@ public class MavlinkParamDef {
         MavlinkParamDef that = (MavlinkParamDef) o;
 
         if (index != that.index) return false;
-        return description != null ? description.equals(that.description) : that.description == null;
+        return Objects.equals(description, that.description);
     }
 
     @Override
@@ -37,9 +40,6 @@ public class MavlinkParamDef {
 
     @Override
     public String toString() {
-        return "MavlinkParamDef{" +
-                "index=" + index +
-                ", description='" + description + '\'' +
-                '}';
+        return MessageFormat.format("MavlinkParamDef'{'index={0}, description=''{1}'''}'", index, description);
     }
 }

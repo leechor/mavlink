@@ -1,5 +1,6 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class MavlinkDef {
@@ -52,13 +53,6 @@ public class MavlinkDef {
 
     @Override
     public String toString() {
-        return "MavlinkDef{" +
-                "includes=" + includes +
-                ", name='" + name + '\'' +
-                ", version=" + version +
-                ", id=" + id +
-                ", enums=" + enums +
-                ", messages=" + messages +
-                '}';
+        return MessageFormat.format("MavlinkDef'{'includes={0}, name=''{1}'', version={2}, id={3}, enums={4}, messages={5}'}'", includes, name, version, id, enums, messages);
     }
 }

@@ -23,6 +23,5 @@ sourceSets.main.java.srcDirs += genSrc
 
 dependencies {
     implementation project(':mavlink-protocol')
-
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'junit:junit:4.13.2'
 }

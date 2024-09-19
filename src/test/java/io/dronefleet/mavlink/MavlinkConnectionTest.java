@@ -37,7 +37,7 @@ public class MavlinkConnectionTest {
         MavlinkDialect dialect = new AbstractMavlinkDialect(
                 "testdialect",
                 Collections.emptyList(),
-                new UnmodifiableMapBuilder<Integer, Class>()
+                new UnmodifiableMapBuilder<Integer, Class<?>>()
                         .put(0, TestMessage.class)
                         .build());
 
@@ -60,7 +60,7 @@ public class MavlinkConnectionTest {
         MavlinkDialect dialect = new AbstractMavlinkDialect(
                 "testdialect",
                 Collections.emptyList(),
-                new UnmodifiableMapBuilder<Integer, Class>()
+                new UnmodifiableMapBuilder<Integer, Class<?>>()
                         .put(0, TestMessage.class)
                         .build());
 
@@ -87,7 +87,7 @@ public class MavlinkConnectionTest {
         MavlinkDialect defaultDialect = new AbstractMavlinkDialect(
                 "testdialect",
                 Collections.emptyList(),
-                new UnmodifiableMapBuilder<Integer, Class>()
+                new UnmodifiableMapBuilder<Integer, Class<?>>()
                         .put(0, TestMessage.class)
                         .build());
 

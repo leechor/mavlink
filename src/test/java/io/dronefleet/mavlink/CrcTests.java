@@ -1,6 +1,6 @@
 package io.dronefleet.mavlink;
 
-import io.dronefleet.mavlink.common.Heartbeat;
+import io.dronefleet.mavlink.minimal.Heartbeat;
 import io.dronefleet.mavlink.protocol.MavlinkPacket;
 import io.dronefleet.mavlink.serialization.payload.MavlinkPayloadSerializer;
 import io.dronefleet.mavlink.serialization.payload.reflection.ReflectionPayloadSerializer;

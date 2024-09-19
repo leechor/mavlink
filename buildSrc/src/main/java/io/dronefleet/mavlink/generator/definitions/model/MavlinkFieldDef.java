@@ -1,5 +1,7 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
+
 public class MavlinkFieldDef implements Comparable<MavlinkFieldDef> {
     private final int index;
     private final MavlinkTypeDef type;
@@ -70,17 +72,7 @@ public class MavlinkFieldDef implements Comparable<MavlinkFieldDef> {
 
     @Override
     public String toString() {
-        return "MavlinkFieldDef{" +
-                "index=" + index +
-                ", type=" + type +
-                ", name='" + name + '\'' +
-                ", enumName='" + enumName + '\'' +
-                ", display='" + display + '\'' +
-                ", units='" + units + '\'' +
-                ", printFormat='" + printFormat + '\'' +
-                ", extension=" + extension +
-                ", description='" + description + '\'' +
-                '}';
+        return MessageFormat.format("MavlinkFieldDef'{'index={0}, type={1}, name=''{2}'', enumName=''{3}'', display=''{4}'', units=''{5}'', printFormat=''{6}'', extension={7}, description=''{8}'''}'", index, type, name, enumName, display, units, printFormat, extension, description);
     }
 
     @Override

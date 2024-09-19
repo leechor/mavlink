@@ -1,7 +1,9 @@
 package io.dronefleet.mavlink.util;
 
+import io.dronefleet.mavlink.annotations.MavlinkEnum;
 import io.dronefleet.mavlink.util.reflection.MavlinkReflection;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -36,19 +38,19 @@ public class EnumValue<T extends Enum<T>> {
     public static <T extends Enum<T>> EnumValue<T> create(Class<T> enumType, int value, boolean bitmask) {
         return new EnumValue<>(
                 value,
-                MavlinkReflection.getEntryByValue(enumType, value)
-                        .orElse(null),
-                bitmask);
+                Objects.requireNonNull(MavlinkReflection.getEntryByValue(enumType, value)
+                        .orElse(null)));
     }
 
     private final int value;
     private final T entry;
     private final boolean bitmask;
 
-    private EnumValue(int value, T entry, boolean bitmask) {
+    private EnumValue(int value, T entry) {
         this.value = value;
         this.entry = entry;
-        this.bitmask = bitmask;
+        MavlinkEnum annotation = entry.getClass().getAnnotation(MavlinkEnum.class);
+        this.bitmask = annotation != null && annotation.bitmask();
     }
 
     public int value() {
@@ -57,6 +59,10 @@ public class EnumValue<T extends Enum<T>> {
 
     public T entry() {
         return entry;
+    }
+
+    public boolean bitmask() {
+        return bitmask;
     }
 
     public boolean flagsEnabled(Enum<T>... flags) {
@@ -100,9 +106,6 @@ public class EnumValue<T extends Enum<T>> {
 
     @Override
     public String toString() {
-        return "EnumValue{" +
-                "value=" + value +
-                ", entry=" + entry +
-                '}';
+        return MessageFormat.format("EnumValue'{'value={0}, entry={1}'}'", value, entry);
     }
 }

@@ -3,6 +3,7 @@ package io.dronefleet.mavlink.generator.definitions;
 import io.dronefleet.mavlink.generator.definitions.model.*;
 import io.dronefleet.mavlink.generator.definitions.xml.XmlElement;
 import io.dronefleet.mavlink.generator.definitions.xml.XmlParser;
+import org.jetbrains.annotations.NotNull;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -32,32 +33,7 @@ public class MavlinkDefinitionDeserializer {
                 Integer.parseInt(mavlink.content("dialect", "-1")),
                 mavlink.elements("enums/enum")
                         .stream()
-                        .map(enumeration -> new MavlinkEnumDef(
-                                enumeration.attr("name"),
-                                enumeration.content("description"),
-                                enumeration.elements("entry")
-                                        .stream()
-                                        .map(entry -> new MavlinkEntryDef(
-                                                entry.attr("value") != null ? Long.decode(entry.attr("value")).intValue() : null,
-                                                entry.attr("name"),
-                                                entry.content("description"),
-                                                entry.elements("param")
-                                                        .stream()
-                                                        .map(param -> new MavlinkParamDef(
-                                                                Integer.parseInt(param.attr("index")),
-                                                                param.getContent()))
-                                                        .collect(Collectors.toList()),
-                                                entry.elements("deprecated")
-                                                        .stream()
-                                                        .findFirst()
-                                                        .map(this::deserializeDeprecation)
-                                                        .orElse(null)))
-                                        .collect(Collectors.toList()),
-                                enumeration.elements("deprecated")
-                                        .stream()
-                                        .findFirst()
-                                        .map(this::deserializeDeprecation)
-                                        .orElse(null)))
+                        .map(this::getMavlinkEnumDef)
                         .collect(Collectors.toList()),
                 mavlink.elements("messages/message")
                         .stream()
@@ -71,16 +47,7 @@ public class MavlinkDefinitionDeserializer {
                                     message.content("description"),
                                     message.elements("field")
                                             .stream()
-                                            .map(field -> new MavlinkFieldDef(
-                                                    field.getIndex(),
-                                                    MavlinkTypeDef.fromXmlValue(field.attr("type")),
-                                                    field.attr("name"),
-                                                    field.attr("enum"),
-                                                    field.attr("display"),
-                                                    field.attr("units"),
-                                                    field.attr("print_format"),
-                                                    field.getIndex() > extensionsIndex,
-                                                    field.getContent()))
+                                            .map(field -> getMavlinkFieldDef(field, extensionsIndex))
                                             .collect(Collectors.toList()),
                                     message.elements("deprecated")
                                             .stream()
@@ -93,6 +60,53 @@ public class MavlinkDefinitionDeserializer {
                                             .isPresent());
                         })
                         .collect(Collectors.toList()));
+    }
+
+    private static @NotNull MavlinkFieldDef getMavlinkFieldDef(XmlElement field, int extensionsIndex) {
+        return new MavlinkFieldDef(
+                field.getIndex(),
+                MavlinkTypeDef.fromXmlValue(field.attr("type")),
+                field.attr("name"),
+                field.attr("enum"),
+                field.attr("display"),
+                field.attr("units"),
+                field.attr("print_format"),
+                field.getIndex() > extensionsIndex,
+                field.getContent());
+    }
+
+    private @NotNull MavlinkEnumDef getMavlinkEnumDef(XmlElement enumeration) {
+        return new MavlinkEnumDef(
+                enumeration.attr("name"),
+                enumeration.content("description"),
+                enumeration.elements("entry")
+                        .stream()
+                        .map(this::getMavlinkEntryDef)
+                        .collect(Collectors.toList()),
+                enumeration.elements("deprecated")
+                        .stream()
+                        .findFirst()
+                        .map(this::deserializeDeprecation)
+                        .orElse(null),
+                Boolean.parseBoolean(enumeration.attr("bitmask")));
+    }
+
+    private @NotNull MavlinkEntryDef getMavlinkEntryDef(XmlElement entry) {
+        return new MavlinkEntryDef(
+                entry.attr("value") != null ? Long.decode(entry.attr("value")).intValue() : null,
+                entry.attr("name"),
+                entry.content("description"),
+                entry.elements("param")
+                        .stream()
+                        .map(param -> new MavlinkParamDef(
+                                Integer.parseInt(param.attr("index")),
+                                param.getContent()))
+                        .collect(Collectors.toList()),
+                entry.elements("deprecated")
+                        .stream()
+                        .findFirst()
+                        .map(this::deserializeDeprecation)
+                        .orElse(null));
     }
 
 

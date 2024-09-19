@@ -20,6 +20,7 @@ public class EnumGenerator {
     private final String description;
     private final List<EnumConstantGenerator> constants;
     private final DeprecationGenerator deprecation;
+    private final boolean bitmask;
 
     public EnumGenerator(
             PackageGenerator parentPackage,
@@ -27,13 +28,14 @@ public class EnumGenerator {
             ClassName className,
             String description,
             List<EnumConstantGenerator> constants,
-            DeprecationGenerator deprecation) {
+            DeprecationGenerator deprecation, boolean bitmask) {
         this.parentPackage = parentPackage;
         this.name = name;
         this.className = className;
         this.description = description;
         this.constants = constants;
         this.deprecation = deprecation;
+        this.bitmask = bitmask;
     }
 
     public PackageGenerator getParentPackage() {
@@ -74,7 +76,11 @@ public class EnumGenerator {
 
     public List<AnnotationSpec> annotations() {
         List<AnnotationSpec> annotations = new ArrayList<>();
-        annotations.add(AnnotationSpec.builder(MAVLINK_ENUM).build());
+        AnnotationSpec.Builder builder = AnnotationSpec.builder(MAVLINK_ENUM);
+        if (bitmask) {
+            builder.addMember("bitmask", "$L", true);
+        }
+        annotations.add(builder.build());
         if (deprecation.deprecated()) {
             annotations.add(deprecation.annotation());
         }

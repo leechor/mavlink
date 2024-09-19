@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -107,7 +108,8 @@ public class MavlinkGeneratorFactory {
                     packageGenerator.getTypeName(enumDef.getName()),
                     enumDef.getDescription(),
                     new ArrayList<>(enumDef.getEntries().size()),
-                    visitDeprecation(enumDef.getDeprecation()));
+                    visitDeprecation(enumDef.getDeprecation()),
+                    enumDef.isBitmask());
 
             packageGenerator.addEnum(enumGenerator);
         }
@@ -167,7 +169,7 @@ public class MavlinkGeneratorFactory {
     private List<MavlinkDef> sortDefinitions(List<MavlinkDef> definitions) {
         List<MavlinkDef> sortedDefinitions = new ArrayList<>(definitions.size());
         definitions = new ArrayList<>(definitions);
-        while (definitions.size() > 0) {
+        while (!definitions.isEmpty()) {
             MavlinkDef definition = nextDefinitionLeaf(new Stack<>(), definitions, sortedDefinitions, definitions.get(0));
             sortedDefinitions.add(definition);
             definitions.remove(definition);
@@ -193,10 +195,9 @@ public class MavlinkGeneratorFactory {
                 .stream()
                 .filter(s -> sorted.stream()
                         .map(MavlinkDef::getName)
-                        .filter(s::equals)
-                        .count() == 0)
+                        .noneMatch(s::equals))
                 .collect(Collectors.toList());
-        if (unmetDependencies.size() > 0) {
+        if (!unmetDependencies.isEmpty()) {
             String dependencyName = unmetDependencies.get(0);
             MavlinkDef dependency = work.stream()
                     .filter(md -> dependencyName.equals(md.getName()))
@@ -209,7 +210,7 @@ public class MavlinkGeneratorFactory {
     }
 
     private MavlinkDef loadDefinition(File file, MavlinkDefinitionDeserializer deserializer) {
-        try (InputStream is = new FileInputStream(file)) {
+        try (InputStream is = Files.newInputStream(file.toPath())) {
             return deserializer.deserialize(is, new File(file.getPath()).getName());
         } catch (IOException e) {
             throw new IllegalStateException("unable to open stream for URL " + file.toString(), e);

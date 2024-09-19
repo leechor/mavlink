@@ -149,6 +149,12 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
 
     public List<MethodSpec> generateConvenienceSetters(ClassName className) {
         if (enumName != null) {
+            TypeName fieldType = parentPackage.resolve(enumName);
+            TypeName enumType = ParameterizedTypeName.get(ClassName.get(Enum.class), fieldType);
+            ArrayTypeName arrayOfEnumOfT = ArrayTypeName.of(enumType);
+            ClassName collection = ClassName.get(Collection.class);
+            TypeName collectionOfEnumOfT = ParameterizedTypeName.get(collection, enumType);
+
             return Arrays.asList(
                     MethodSpec.methodBuilder(nameCamelCase)
                             .addJavadoc(javadoc())
@@ -157,12 +163,11 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
                             .addStatement("return $1N($2T.of($3N))", nameCamelCase, ENUM_VALUE, "entry")
                             .returns(className)
                             .build(),
-
                     MethodSpec.methodBuilder(nameCamelCase)
                             .varargs(true)
                             .addJavadoc(javadoc())
                             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                            .addParameter(Enum[].class, "flags")
+                            .addParameter(arrayOfEnumOfT, "flags")
                             .addStatement("return $1N($2T.create(flags))", nameCamelCase, ENUM_VALUE)
                             .returns(className)
                             .build(),
@@ -170,7 +175,7 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
                     MethodSpec.methodBuilder(nameCamelCase)
                             .addJavadoc(javadoc())
                             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                            .addParameter(ParameterizedTypeName.get(Collection.class, Enum.class), "flags")
+                            .addParameter(collectionOfEnumOfT, "flags")
                             .addStatement("return $1N($2T.create(flags))", nameCamelCase, ENUM_VALUE)
                             .returns(className)
                             .build()

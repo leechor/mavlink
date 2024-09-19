@@ -53,10 +53,10 @@ public class PackageGenerator {
 
     public List<EnumGenerator> getEnumsIncludingDependencies() {
         return Stream.concat(
-                enums.stream(),
-                dependencies.stream()
-                        .map(PackageGenerator::getEnumsIncludingDependencies)
-                        .flatMap(List::stream))
+                        enums.stream(),
+                        dependencies.stream()
+                                .map(PackageGenerator::getEnumsIncludingDependencies)
+                                .flatMap(List::stream))
                 .collect(Collectors.toList());
     }
 
@@ -68,10 +68,10 @@ public class PackageGenerator {
 
     public List<MessageGenerator> getMessagesIncludingDependencies() {
         return Stream.concat(
-                messages.stream(),
-                dependencies.stream()
-                        .map(pg -> pg.messages)
-                        .flatMap(List::stream))
+                        messages.stream(),
+                        dependencies.stream()
+                                .map(pg -> pg.messages)
+                                .flatMap(List::stream))
                 .collect(Collectors.toList());
     }
 
@@ -135,9 +135,13 @@ public class PackageGenerator {
         return xmlName;
     }
 
+    public String getPackageName() {
+        return packageName;
+    }
+
     public TypeSpec generateDialect() {
         CodeBlock.Builder dependenciesInitializer = CodeBlock.builder();
-        if (dependencies.size() == 0) {
+        if (dependencies.isEmpty()) {
             dependenciesInitializer.add("$T.emptyList()", Collections.class);
         } else {
             dependenciesInitializer.add("$T.asList$>$>", Arrays.class);
@@ -151,13 +155,16 @@ public class PackageGenerator {
         }
 
         CodeBlock.Builder messageTypesInitializer = CodeBlock.builder();
-        if (messages.size() == 0) {
+        if (messages.isEmpty()) {
             messageTypesInitializer.add("$T.emptyMap()", Collections.class);
         } else {
             messageTypesInitializer.add("new $T()\n$>$>", ParameterizedTypeName.get(
                     UNMODIFIABLE_MAP_BUILDER,
                     TypeName.get(Integer.class),
-                    TypeName.get(Class.class)));
+                    ParameterizedTypeName.get(
+                            ClassName.get(Class.class),
+                            WildcardTypeName.subtypeOf(Object.class)
+                    )));
             messageTypesInitializer.add(
                     messages.stream()
                             .map(m -> CodeBlock.builder()
@@ -167,20 +174,26 @@ public class PackageGenerator {
             messageTypesInitializer.add("$<$<");
         }
 
+        TypeName mapType = ParameterizedTypeName.get(
+                ClassName.get(Map.class),
+                ClassName.get(Integer.class),
+                ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class))
+        );
+
         return TypeSpec.classBuilder(dialectClassName())
                 .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .superclass(ABSTRACT_MAVLINK_DIALECT)
                 .addField(FieldSpec.builder(
-                        ParameterizedTypeName.get(ClassName.get(List.class), MAVLINK_DIALECT),
-                        "dependencies",
-                        Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                ParameterizedTypeName.get(ClassName.get(List.class), MAVLINK_DIALECT),
+                                "dependencies",
+                                Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                         .addJavadoc("A list of all of the dependencies of this dialect.\n")
                         .initializer(dependenciesInitializer.build())
                         .build())
                 .addField(FieldSpec.builder(
-                        ParameterizedTypeName.get(Map.class, Integer.class, Class.class),
-                        "messages",
-                        Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                mapType,
+                                "messages",
+                                Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                         .addJavadoc("A list of all message types supported by this dialect.\n")
                         .initializer(messageTypesInitializer.build())
                         .build())
@@ -196,10 +209,10 @@ public class PackageGenerator {
 
     public List<JavaFile> generate() {
         return Stream.concat(
-                Stream.concat(
-                        messages.stream().map(MessageGenerator::generate),
-                        enums.stream().map(EnumGenerator::generate)),
-                Stream.of(generateDialect()))
+                        Stream.concat(
+                                messages.stream().map(MessageGenerator::generate),
+                                enums.stream().map(EnumGenerator::generate)),
+                        Stream.of(generateDialect()))
                 .map(ts -> JavaFile.builder(packageName, ts)
                         .indent("    ")
                         .build())

@@ -1,5 +1,8 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
+import java.util.Objects;
+
 public class MavlinkDeprecationDef {
     private final String since;
     private final String replacedBy;
@@ -25,14 +28,22 @@ public class MavlinkDeprecationDef {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MavlinkDeprecationDef that = (MavlinkDeprecationDef) o;
 
-        if (since != null ? !since.equals(that.since) : that.since != null) return false;
-        if (replacedBy != null ? !replacedBy.equals(that.replacedBy) : that.replacedBy != null) return false;
-        return message != null ? message.equals(that.message) : that.message == null;
+        if (!Objects.equals(since, that.since)) {
+            return false;
+        }
+        if (!Objects.equals(replacedBy, that.replacedBy)) {
+            return false;
+        }
+        return Objects.equals(message, that.message);
     }
 
     @Override
@@ -45,10 +56,6 @@ public class MavlinkDeprecationDef {
 
     @Override
     public String toString() {
-        return "MavlinkDeprecationDef{" +
-                "since='" + since + '\'' +
-                ", replacedBy='" + replacedBy + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+        return MessageFormat.format("MavlinkDeprecationDef'{'since=''{0}'', replacedBy=''{1}'', message=''{2}'''}'", since, replacedBy, message);
     }
 }
