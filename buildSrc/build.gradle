@@ -10,7 +10,6 @@ repositories {
 }
 
 ext {
-    lombokVersion = '1.18.34'
     junitVersion = '4.13.2'
     javaPoetVersion = '1.13.0'
 }
@@ -18,7 +17,4 @@ ext {
 dependencies {
     implementation "com.squareup:javapoet:${javaPoetVersion}"
     testImplementation "junit:junit:${junitVersion}"
-    implementation "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }

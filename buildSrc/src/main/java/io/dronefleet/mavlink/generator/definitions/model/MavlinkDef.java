@@ -27,6 +27,12 @@ public class MavlinkDef {
         this.messages = messages;
     }
 
+    @Override
+    public String toString() {
+        return MessageFormat.format("MavlinkDef'{'includes={0}, name=''{1}'', version={2}, id={3}, enums={4}, messages={5}'}'", includes, name, version, id, enums, messages);
+    }
+
+    //region Description
     public List<String> getIncludes() {
         return includes;
     }
@@ -50,9 +56,6 @@ public class MavlinkDef {
     public List<MavlinkMessageDef> getMessages() {
         return messages;
     }
+    //endregion
 
-    @Override
-    public String toString() {
-        return MessageFormat.format("MavlinkDef'{'includes={0}, name=''{1}'', version={2}, id={3}, enums={4}, messages={5}'}'", includes, name, version, id, enums, messages);
-    }
 }

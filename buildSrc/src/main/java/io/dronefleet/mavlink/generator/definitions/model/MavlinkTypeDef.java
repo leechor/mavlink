@@ -3,8 +3,29 @@ package io.dronefleet.mavlink.generator.definitions.model;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MavlinkTypeDef {
+
+    private final String originalType;
+    private final String convertedType;
+    private final int typeLength;
+    private final int arrayLength;
+    private final int wireLength;
+
+    public MavlinkTypeDef(
+            String originalType,
+            String convertedType,
+            int typeLength,
+            int arrayLength,
+            int wireLength) {
+        this.originalType = originalType;
+        this.convertedType = convertedType;
+        this.typeLength = typeLength;
+        this.arrayLength = arrayLength;
+        this.wireLength = wireLength;
+    }
 
     private static final Map<String, Integer> typeLengths = new HashMap<String, Integer>() {{
         put("float", 4);
@@ -67,25 +88,13 @@ public class MavlinkTypeDef {
                 wireLength);
     }
 
-    private final String originalType;
-    private final String convertedType;
-    private final int typeLength;
-    private final int arrayLength;
-    private final int wireLength;
-
-    public MavlinkTypeDef(
-            String originalType,
-            String convertedType,
-            int typeLength,
-            int arrayLength,
-            int wireLength) {
-        this.originalType = originalType;
-        this.convertedType = convertedType;
-        this.typeLength = typeLength;
-        this.arrayLength = arrayLength;
-        this.wireLength = wireLength;
+    @Override
+    public String toString() {
+        return MessageFormat.format("MavlinkTypeDef'{'originalType=''{0}'', convertedType=''{1}'', typeLength={2}, arrayLength={3}, wireLength={4}'}'", originalType, convertedType, typeLength, arrayLength, wireLength);
     }
 
+
+    //region Description
     public String getOriginalType() {
         return originalType;
     }
@@ -109,9 +118,5 @@ public class MavlinkTypeDef {
     public boolean isArray() {
         return getArrayLength() > 0;
     }
-
-    @Override
-    public String toString() {
-        return MessageFormat.format("MavlinkTypeDef'{'originalType=''{0}'', convertedType=''{1}'', typeLength={2}, arrayLength={3}, wireLength={4}'}'", originalType, convertedType, typeLength, arrayLength, wireLength);
-    }
+    //endregion
 }

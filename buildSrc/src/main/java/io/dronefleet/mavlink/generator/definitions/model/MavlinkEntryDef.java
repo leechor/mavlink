@@ -1,5 +1,6 @@
 package io.dronefleet.mavlink.generator.definitions.model;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class MavlinkEntryDef {
@@ -17,26 +18,7 @@ public class MavlinkEntryDef {
         this.deprecation = deprecation;
     }
 
-    public Integer getValue() {
-        return value;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<MavlinkParamDef> getParams() {
-        return params;
-    }
-
-    public MavlinkDeprecationDef getDeprecation() {
-        return deprecation;
-    }
-
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,12 +45,30 @@ public class MavlinkEntryDef {
 
     @Override
     public String toString() {
-        return "MavlinkEntryDef{" +
-                "value=" + value +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", params=" + params +
-                ", deprecation=" + deprecation +
-                '}';
+        return MessageFormat.format("MavlinkEntryDef'{'value={0}, name=''{1}'', description=''{2}'', params={3}, deprecation={4}'}'", value, name, description, params, deprecation);
     }
+    //endregion
+
+    //region Description
+    public Integer getValue() {
+        return value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MavlinkParamDef> getParams() {
+        return params;
+    }
+
+    public MavlinkDeprecationDef getDeprecation() {
+        return deprecation;
+    }
+    //endregion
+
 }

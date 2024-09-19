@@ -10,6 +10,17 @@ import java.util.Objects;
 
 public class EnumValue<T extends Enum<T>> {
 
+    private final int value;
+    private final T entry;
+    private final boolean bitmask;
+
+    private EnumValue(int value, T entry) {
+        this.value = value;
+        this.entry = entry;
+        MavlinkEnum annotation = entry.getClass().getAnnotation(MavlinkEnum.class);
+        this.bitmask = annotation != null && annotation.bitmask();
+    }
+
     public static <T extends Enum<T>> EnumValue<T> of(T entry) {
         int value = MavlinkReflection.getEnumValue(entry);
         return new EnumValue<>(value, entry);
@@ -40,29 +51,6 @@ public class EnumValue<T extends Enum<T>> {
                 value,
                 Objects.requireNonNull(MavlinkReflection.getEntryByValue(enumType, value)
                         .orElse(null)));
-    }
-
-    private final int value;
-    private final T entry;
-    private final boolean bitmask;
-
-    private EnumValue(int value, T entry) {
-        this.value = value;
-        this.entry = entry;
-        MavlinkEnum annotation = entry.getClass().getAnnotation(MavlinkEnum.class);
-        this.bitmask = annotation != null && annotation.bitmask();
-    }
-
-    public int value() {
-        return value;
-    }
-
-    public T entry() {
-        return entry;
-    }
-
-    public boolean bitmask() {
-        return bitmask;
     }
 
     public boolean flagsEnabled(Enum<T>... flags) {
@@ -108,4 +96,20 @@ public class EnumValue<T extends Enum<T>> {
     public String toString() {
         return MessageFormat.format("EnumValue'{'value={0}, entry={1}'}'", value, entry);
     }
+
+
+    //region Description
+    public int value() {
+        return value;
+    }
+
+    public T entry() {
+        return entry;
+    }
+
+    public boolean bitmask() {
+        return bitmask;
+    }
+    //endregion
+
 }

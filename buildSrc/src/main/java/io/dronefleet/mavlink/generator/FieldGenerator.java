@@ -51,26 +51,6 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
         this.extension = extension;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public boolean isArray() {
-        return array;
-    }
-
-    public int getArraySize() {
-        return arraySize;
-    }
-
-    public boolean isExtension() {
-        return extension;
-    }
-
     public TypeName javaType() {
         if (enumName != null) {
             return enumValueType();
@@ -79,10 +59,6 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
             return arrayType();
         }
         return primitiveType();
-    }
-
-    public String getNameCamelCase() {
-        return nameCamelCase;
     }
 
     public String javadoc() {
@@ -268,4 +244,32 @@ public class FieldGenerator implements Comparable<FieldGenerator> {
 
         return index - other.index;
     }
+
+
+    //region Description
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isArray() {
+        return array;
+    }
+
+    public int getArraySize() {
+        return arraySize;
+    }
+
+    public boolean isExtension() {
+        return extension;
+    }
+
+    public String getNameCamelCase() {
+        return nameCamelCase;
+    }
+    //endregion
+
 }

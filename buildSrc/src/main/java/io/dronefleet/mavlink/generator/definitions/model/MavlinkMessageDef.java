@@ -28,34 +28,7 @@ public class MavlinkMessageDef {
         this.workInProgress = workInProgress;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getCrcExtra() {
-        return crcExtra;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<MavlinkFieldDef> getFields() {
-        return fields;
-    }
-
-    public MavlinkDeprecationDef getDeprecation() {
-        return deprecation;
-    }
-
-    public boolean isWorkInProgress() {
-        return workInProgress;
-    }
-
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,4 +66,36 @@ public class MavlinkMessageDef {
                 ", workInProgress=" + workInProgress +
                 '}';
     }
+    //endregion
+
+    //region Description
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getCrcExtra() {
+        return crcExtra;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MavlinkFieldDef> getFields() {
+        return fields;
+    }
+
+    public MavlinkDeprecationDef getDeprecation() {
+        return deprecation;
+    }
+
+    public boolean isWorkInProgress() {
+        return workInProgress;
+    }
+    //endregion
+
 }

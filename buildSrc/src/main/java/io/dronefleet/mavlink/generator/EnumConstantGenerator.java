@@ -36,14 +36,6 @@ public class EnumConstantGenerator {
         this.deprecation = deprecation;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int value() {
-        return value;
-    }
-
     public void addParameter(EnumParameterGenerator parameterGenerator) {
         parameters.add(parameterGenerator);
     }
@@ -89,4 +81,14 @@ public class EnumConstantGenerator {
                 .addAnnotations(annotations())
                 .build();
     }
+
+    //region Description
+    public String getName() {
+        return name;
+    }
+
+    public int value() {
+        return value;
+    }
+    //endregion
 }

@@ -1,7 +1,6 @@
 package io.dronefleet.mavlink.generator;
 
 import com.squareup.javapoet.*;
-import lombok.Getter;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
@@ -20,13 +19,9 @@ public class MessageGenerator {
             "MavlinkMessageBuilder");
 
     private final PackageGenerator parentPackage;
-    @Getter
     private final int id;
-    @Getter
     private final String name;
-    @Getter
     private final Integer crcExtra;
-    @Getter
     private final ClassName className;
     private final String description;
     private final List<FieldGenerator> fields;
@@ -225,4 +220,42 @@ public class MessageGenerator {
                 .addMethod(generateToString())
                 .build();
     }
+
+    // region
+    public PackageGenerator getParentPackage() {
+        return parentPackage;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getCrcExtra() {
+        return crcExtra;
+    }
+
+    public ClassName getClassName() {
+        return className;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<FieldGenerator> getFields() {
+        return fields;
+    }
+
+    public DeprecationGenerator getDeprecation() {
+        return deprecation;
+    }
+
+    public boolean isWorkInProgress() {
+        return workInProgress;
+    }
+    // endregion
 }

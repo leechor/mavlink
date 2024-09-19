@@ -19,26 +19,7 @@ public class MavlinkEnumDef {
         this.bitmask = bitmask;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<MavlinkEntryDef> getEntries() {
-        return entries;
-    }
-
-    public MavlinkDeprecationDef getDeprecation() {
-        return deprecation;
-    }
-
-    public boolean isBitmask() {
-        return bitmask;
-    }
-
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,4 +56,28 @@ public class MavlinkEnumDef {
     public String toString() {
         return MessageFormat.format("MavlinkEnumDef'{'name=''{0}'', description=''{1}'', entries={2}, deprecation={3}'', bitmask={4}'}'", name, description, entries, deprecation, bitmask);
     }
+    //endregion
+
+    //region Description
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<MavlinkEntryDef> getEntries() {
+        return entries;
+    }
+
+    public MavlinkDeprecationDef getDeprecation() {
+        return deprecation;
+    }
+
+    public boolean isBitmask() {
+        return bitmask;
+    }
+    //endregion
+
 }

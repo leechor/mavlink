@@ -12,14 +12,7 @@ public class MavlinkParamDef {
         this.description = description;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,4 +35,17 @@ public class MavlinkParamDef {
     public String toString() {
         return MessageFormat.format("MavlinkParamDef'{'index={0}, description=''{1}'''}'", index, description);
     }
+    //endregion
+
+
+    //region Description
+    public int getIndex() {
+        return index;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    //endregion
+
 }

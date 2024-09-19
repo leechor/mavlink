@@ -34,6 +34,30 @@ public class MavlinkFieldDef implements Comparable<MavlinkFieldDef> {
         this.description = description;
     }
 
+    //region Description
+    @Override
+    public String toString() {
+        return MessageFormat.format("MavlinkFieldDef'{'index={0}, type={1}, name=''{2}'', enumName=''{3}'', display=''{4}'', units=''{5}'', printFormat=''{6}'', extension={7}, description=''{8}'''}'", index, type, name, enumName, display, units, printFormat, extension, description);
+    }
+
+    @Override
+    public int compareTo(MavlinkFieldDef other) {
+        if (this.isExtension() && !other.isExtension()) {
+            return 1;
+        }
+        if (!this.isExtension() && other.isExtension()) {
+            return -1;
+        }
+
+        if (!this.isExtension() && this.getType().getTypeLength() != other.getType().getTypeLength()) {
+            return other.getType().getTypeLength() - this.getType().getTypeLength();
+        }
+
+        return this.getIndex() - other.getIndex();
+    }
+    //endregion
+
+    //region Description
     public int getIndex() {
         return index;
     }
@@ -69,25 +93,6 @@ public class MavlinkFieldDef implements Comparable<MavlinkFieldDef> {
     public String getDescription() {
         return description;
     }
+    //endregion
 
-    @Override
-    public String toString() {
-        return MessageFormat.format("MavlinkFieldDef'{'index={0}, type={1}, name=''{2}'', enumName=''{3}'', display=''{4}'', units=''{5}'', printFormat=''{6}'', extension={7}, description=''{8}'''}'", index, type, name, enumName, display, units, printFormat, extension, description);
-    }
-
-    @Override
-    public int compareTo(MavlinkFieldDef other) {
-        if (this.isExtension() && !other.isExtension()) {
-            return 1;
-        }
-        if (!this.isExtension() && other.isExtension()) {
-            return -1;
-        }
-
-        if (!this.isExtension() && this.getType().getTypeLength() != other.getType().getTypeLength()) {
-            return other.getType().getTypeLength() - this.getType().getTypeLength();
-        }
-
-        return this.getIndex() - other.getIndex();
-    }
 }

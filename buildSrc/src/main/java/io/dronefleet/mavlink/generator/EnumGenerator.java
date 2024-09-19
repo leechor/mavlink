@@ -38,32 +38,7 @@ public class EnumGenerator {
         this.bitmask = bitmask;
     }
 
-    public PackageGenerator getParentPackage() {
-        return parentPackage;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public ClassName getClassName() {
-        return className;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String javadoc() {
-        String javadoc = parentPackage.processJavadoc(getDescription());
-
-        if (deprecation.deprecated()) {
-            javadoc += parentPackage.processJavadoc(deprecation.javadoc());
-        }
-        return javadoc;
-    }
-
-    public void addConstant(EnumConstantGenerator generator) {
+      public void addConstant(EnumConstantGenerator generator) {
         constants.add(generator);
     }
 
@@ -95,4 +70,31 @@ public class EnumGenerator {
         constants.forEach(c -> builder.addEnumConstant(c.getName(), c.generate()));
         return builder.build();
     }
+
+    //region Description
+    public PackageGenerator getParentPackage() {
+        return parentPackage;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ClassName getClassName() {
+        return className;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String javadoc() {
+        String javadoc = parentPackage.processJavadoc(getDescription());
+
+        if (deprecation.deprecated()) {
+            javadoc += parentPackage.processJavadoc(deprecation.javadoc());
+        }
+        return javadoc;
+    }
+    //endregion
 }

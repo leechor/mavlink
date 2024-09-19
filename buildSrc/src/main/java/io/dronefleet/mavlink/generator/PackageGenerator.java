@@ -89,18 +89,6 @@ public class PackageGenerator {
                         .orElse(null));
     }
 
-    public ClassName getTypeName(String name) {
-        return ClassName.get(packageName, toUpperCamelCase(name));
-    }
-
-    public String getFieldName(String name) {
-        return toCamelCase(name);
-    }
-
-    public void addEnum(EnumGenerator enumGenerator) {
-        enums.add(enumGenerator);
-    }
-
     public void addMessage(MessageGenerator messageGenerator) {
         messages.add(messageGenerator);
     }
@@ -129,14 +117,6 @@ public class PackageGenerator {
                 .replace("&", "&amp;")
                 .replace(">", "&gt;")
                 .replace("<", "&lt;");
-    }
-
-    public String getXmlName() {
-        return xmlName;
-    }
-
-    public String getPackageName() {
-        return packageName;
     }
 
     public TypeSpec generateDialect() {
@@ -247,4 +227,27 @@ public class PackageGenerator {
         String upperCamelCase = toUpperCamelCase(underscored);
         return Character.toLowerCase(upperCamelCase.charAt(0)) + upperCamelCase.substring(1);
     }
+
+
+    //region Description
+    public ClassName getTypeName(String name) {
+        return ClassName.get(packageName, toUpperCamelCase(name));
+    }
+
+    public String getFieldName(String name) {
+        return toCamelCase(name);
+    }
+
+    public void addEnum(EnumGenerator enumGenerator) {
+        enums.add(enumGenerator);
+    }
+
+    public String getXmlName() {
+        return xmlName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+    //endregion
 }

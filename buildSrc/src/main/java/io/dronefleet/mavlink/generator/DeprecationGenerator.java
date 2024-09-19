@@ -2,6 +2,8 @@ package io.dronefleet.mavlink.generator;
 
 import com.squareup.javapoet.AnnotationSpec;
 
+import java.text.MessageFormat;
+
 public class DeprecationGenerator {
     private final boolean deprecated;
     private final String since;
@@ -24,7 +26,6 @@ public class DeprecationGenerator {
     }
 
     public String javadoc() {
-        return "@deprecated Since " + since + ", replaced by " + replacedBy + ". "
-                + (message != null ? message : "");
+        return MessageFormat.format("@deprecated Since {0}, replaced by {1}. {2}", since, replacedBy, message != null ? message : "");
     }
 }

@@ -21,22 +21,6 @@ public class MavlinkGeneratorTask extends DefaultTask {
     @OutputDirectory
     private File generatedSources;
 
-    public File getDefinitions() {
-        return definitions;
-    }
-
-    public void setDefinitions(File definitions) {
-        this.definitions = definitions;
-    }
-
-    public File getGeneratedSources() {
-        return generatedSources;
-    }
-
-    public void setGeneratedSources(File generatedSources) {
-        this.generatedSources = generatedSources;
-    }
-
     @TaskAction
     public void generate() throws FileNotFoundException, XMLStreamException {
         // no need to proceed if definitions is null
@@ -78,4 +62,22 @@ public class MavlinkGeneratorTask extends DefaultTask {
         }
         return f.delete();
     }
+
+    //region Description
+    public File getDefinitions() {
+        return definitions;
+    }
+
+    public void setDefinitions(File definitions) {
+        this.definitions = definitions;
+    }
+
+    public File getGeneratedSources() {
+        return generatedSources;
+    }
+
+    public void setGeneratedSources(File generatedSources) {
+        this.generatedSources = generatedSources;
+    }
+    //endregion
 }

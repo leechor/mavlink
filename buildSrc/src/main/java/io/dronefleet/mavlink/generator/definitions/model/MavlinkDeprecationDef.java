@@ -14,18 +14,7 @@ public class MavlinkDeprecationDef {
         this.message = message;
     }
 
-    public String getSince() {
-        return since;
-    }
-
-    public String getReplacedBy() {
-        return replacedBy;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -58,4 +47,19 @@ public class MavlinkDeprecationDef {
     public String toString() {
         return MessageFormat.format("MavlinkDeprecationDef'{'since=''{0}'', replacedBy=''{1}'', message=''{2}'''}'", since, replacedBy, message);
     }
+    //endregion
+
+    //region Description
+    public String getSince() {
+        return since;
+    }
+
+    public String getReplacedBy() {
+        return replacedBy;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+    //endregion
 }

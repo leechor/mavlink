@@ -23,26 +23,6 @@ public class XmlElement {
         this.children = children;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public List<XmlElement> getChildren() {
-        return children;
-    }
-
     public String content(String xpath) {
         return content(xpath, null);
     }
@@ -70,7 +50,7 @@ public class XmlElement {
     }
 
     private XmlElement element(List<String> path) {
-        if (path.size() == 0) {
+        if (path.isEmpty()) {
             return this;
         }
         return children.stream()
@@ -81,7 +61,7 @@ public class XmlElement {
     }
 
     private List<XmlElement> elements(List<String> path) {
-        if (path.size() == 0) {
+        if (path.isEmpty()) {
             return Collections.singletonList(this);
         }
         return children(path.get(0)).stream()
@@ -106,4 +86,26 @@ public class XmlElement {
                 ", children=" + children +
                 '}';
     }
+
+    //region Description
+    public int getIndex() {
+        return index;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public List<XmlElement> getChildren() {
+        return children;
+    }
+    //endregion
 }

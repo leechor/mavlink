@@ -44,7 +44,7 @@ public class XmlParser {
 
                 case XMLStreamReader.END_ELEMENT:
                     String text = textSb.toString().trim();
-                    if (text.length() > 0) {
+                    if (!text.isEmpty()) {
                         current.content = text;
                     }
                     textSb.delete(0, textSb.length());
@@ -61,7 +61,7 @@ public class XmlParser {
 
         if (rootScope.children.size() > 1) {
             throw new IllegalStateException("More than a single document element present in XML document");
-        } else if (rootScope.children.size() < 1) {
+        } else if (rootScope.children.isEmpty()) {
             throw new IllegalStateException("Empty XML document");
         }
 
