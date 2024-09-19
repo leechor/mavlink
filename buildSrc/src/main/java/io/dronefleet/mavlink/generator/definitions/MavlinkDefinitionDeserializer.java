@@ -44,6 +44,7 @@ public class MavlinkDefinitionDeserializer {
                             return new MavlinkMessageDef(
                                     Integer.parseInt(message.attr("id")),
                                     message.attr("name"),
+                                    message.attr("crc_extra", null) != null ? Integer.parseInt(message.attr("crc_extra")) : null,
                                     message.content("description"),
                                     message.elements("field")
                                             .stream()

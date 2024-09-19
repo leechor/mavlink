@@ -25,6 +25,8 @@ public class MessageGenerator {
     @Getter
     private final String name;
     @Getter
+    private final Integer crcExtra;
+    @Getter
     private final ClassName className;
     private final String description;
     private final List<FieldGenerator> fields;
@@ -35,6 +37,7 @@ public class MessageGenerator {
             PackageGenerator parentPackage,
             int id,
             String name,
+            Integer crcExtra,
             ClassName className,
             String description,
             List<FieldGenerator> fields,
@@ -43,6 +46,7 @@ public class MessageGenerator {
         this.parentPackage = parentPackage;
         this.id = id;
         this.name = name;
+        this.crcExtra = crcExtra;
         this.className = className;
         this.description = description;
         this.fields = fields;
@@ -73,6 +77,10 @@ public class MessageGenerator {
     }
 
     public int crc() {
+        if (crcExtra != null) {
+            return crcExtra;
+        }
+
         CrcX25 crc = new CrcX25();
         crc.accumulate(name + " ");
         fields.stream()

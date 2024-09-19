@@ -5,6 +5,7 @@ import java.util.List;
 public class MavlinkMessageDef {
     private final int id;
     private final String name;
+    private final Integer crcExtra;
     private final String description;
     private final List<MavlinkFieldDef> fields;
     private final MavlinkDeprecationDef deprecation;
@@ -13,12 +14,14 @@ public class MavlinkMessageDef {
     public MavlinkMessageDef(
             int id,
             String name,
+            Integer crcExtra,
             String description,
             List<MavlinkFieldDef> fields,
             MavlinkDeprecationDef deprecation,
             boolean workInProgress) {
         this.id = id;
         this.name = name;
+        this.crcExtra = crcExtra;
         this.description = description;
         this.fields = fields;
         this.deprecation = deprecation;
@@ -31,6 +34,10 @@ public class MavlinkMessageDef {
 
     public String getName() {
         return name;
+    }
+
+    public Integer getCrcExtra() {
+        return crcExtra;
     }
 
     public String getDescription() {
