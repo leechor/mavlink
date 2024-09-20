@@ -12,13 +12,15 @@ public class EnumValue<T extends Enum<T>> {
 
     private final int value;
     private final T entry;
-    private final boolean bitmask;
 
     private EnumValue(int value, T entry) {
         this.value = value;
         this.entry = entry;
-        MavlinkEnum annotation = entry.getClass().getAnnotation(MavlinkEnum.class);
-        this.bitmask = annotation != null && annotation.bitmask();
+    }
+
+    public static  boolean isBitmask(Class<?> entryClass) {
+        MavlinkEnum annotation = entryClass.getAnnotation(MavlinkEnum.class);
+        return annotation != null && annotation.bitmask();
     }
 
     public static <T extends Enum<T>> EnumValue<T> of(T entry) {
@@ -43,10 +45,6 @@ public class EnumValue<T extends Enum<T>> {
     }
 
     public static <T extends Enum<T>> EnumValue<T> create(Class<T> enumType, int value) {
-        return create(enumType, value, false);
-    }
-
-    public static <T extends Enum<T>> EnumValue<T> create(Class<T> enumType, int value, boolean bitmask) {
         return new EnumValue<>(
                 value,
                 Objects.requireNonNull(MavlinkReflection.getEntryByValue(enumType, value)
@@ -68,6 +66,7 @@ public class EnumValue<T extends Enum<T>> {
                 .orElse(true);
     }
 
+    //region Description
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -96,7 +95,7 @@ public class EnumValue<T extends Enum<T>> {
     public String toString() {
         return MessageFormat.format("EnumValue'{'value={0}, entry={1}'}'", value, entry);
     }
-
+    //endregion
 
     //region Description
     public int value() {
@@ -107,9 +106,6 @@ public class EnumValue<T extends Enum<T>> {
         return entry;
     }
 
-    public boolean bitmask() {
-        return bitmask;
-    }
     //endregion
 
 }

@@ -8,15 +8,17 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class MavlinkReflection {
+    private MavlinkReflection() {
+    }
 
-    public static int getEnumValue(Enum entry) {
+    public static int getEnumValue(Enum<?> entry) {
         return getEnumEntry(entry)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "The specified entry is not annotated with @MavlinkEntryInfo"))
                 .value();
     }
 
-    public static Optional<MavlinkEntryInfo> getEnumEntry(Enum entry) {
+    public static Optional<MavlinkEntryInfo> getEnumEntry(Enum<?> entry) {
         return Arrays.stream(entry.getDeclaringClass().getFields())
                 .filter(Field::isEnumConstant)
                 .filter(f -> f.isAnnotationPresent(MavlinkEntryInfo.class))
@@ -31,7 +33,7 @@ public class MavlinkReflection {
                 .map(f -> f.getAnnotation(MavlinkEntryInfo.class));
     }
 
-    public static <T extends Enum> Optional<T> getEntryByValue(Class<T> enumType, int value) {
+    public static <T extends Enum<?>> Optional<T> getEntryByValue(Class<T> enumType, int value) {
         return Arrays.stream(enumType.getFields())
                 .filter(Field::isEnumConstant)
                 .filter(f -> f.isAnnotationPresent(MavlinkEntryInfo.class))
