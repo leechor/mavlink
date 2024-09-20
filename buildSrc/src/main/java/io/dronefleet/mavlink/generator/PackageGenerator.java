@@ -10,18 +10,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
+
 public class PackageGenerator {
 
     private static final ClassName MAVLINK_DIALECT = ClassName.get(
-            "io.dronefleet.mavlink",
+            MAVLINK_PACKAGE,
             "MavlinkDialect");
 
     private static final ClassName ABSTRACT_MAVLINK_DIALECT = ClassName.get(
-            "io.dronefleet.mavlink",
+            MAVLINK_PACKAGE,
             "AbstractMavlinkDialect");
 
     private static final ClassName UNMODIFIABLE_MAP_BUILDER = ClassName.get(
-            "io.dronefleet.mavlink.util",
+            MAVLINK_PACKAGE+ ".util",
             "UnmodifiableMapBuilder");
 
     private final String xmlName;

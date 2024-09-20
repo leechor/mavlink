@@ -7,11 +7,11 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
 
 public class MavlinkGeneratorTask extends DefaultTask {
 
@@ -22,12 +22,16 @@ public class MavlinkGeneratorTask extends DefaultTask {
     private File generatedSources;
 
     @TaskAction
-    public void generate() throws FileNotFoundException, XMLStreamException {
+    public void generate() {
         // no need to proceed if definitions is null
-        if (definitions == null) return;
+        if (definitions == null) {
+            return;
+        }
 
-        if (!definitions.isDirectory()) throw new IllegalArgumentException(
+        if (!definitions.isDirectory()) {
+            throw new IllegalArgumentException(
                 "'definitions' should be a directory, but got a file instead.");
+        }
 
         if (generatedSources == null) {
             throw new IllegalStateException("'generatedSources' is not specified.");
@@ -43,7 +47,7 @@ public class MavlinkGeneratorTask extends DefaultTask {
 
         //noinspection ConstantConditions
         MavlinkGeneratorFactory generatorFactory = new MavlinkGeneratorFactory(
-                "io.dronefleet.mavlink",
+                MAVLINK_PACKAGE,
                 Arrays.asList(definitions.listFiles()));
         MavlinkGenerator generator = generatorFactory.newGenerator();
         generator.generate().forEach(f -> {

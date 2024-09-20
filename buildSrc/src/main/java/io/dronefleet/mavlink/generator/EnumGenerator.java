@@ -8,10 +8,12 @@ import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
+
 public class EnumGenerator {
 
     private static final ClassName MAVLINK_ENUM = ClassName.get(
-            "io.dronefleet.mavlink.annotations",
+            MAVLINK_PACKAGE+ ".annotations",
             "MavlinkEnum");
 
     private final PackageGenerator parentPackage;

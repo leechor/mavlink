@@ -6,12 +6,14 @@ import javax.lang.model.element.Modifier;
 import java.math.BigInteger;
 import java.util.*;
 
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
+
 public class FieldGenerator implements Comparable<FieldGenerator> {
     private static final ClassName MAVLINK_MESSAGE_FIELD = ClassName.get(
-            "io.dronefleet.mavlink.annotations",
+            MAVLINK_PACKAGE+ ".annotations",
             "MavlinkFieldInfo");
     private static final ClassName ENUM_VALUE = ClassName.get(
-            "io.dronefleet.mavlink.util",
+            MAVLINK_PACKAGE+ ".util",
             "EnumValue");
 
     private final PackageGenerator parentPackage;

@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
+
+
 public class EnumConstantGenerator {
 
     private static final ClassName MAVLINK_ENUM_ENTRY = ClassName.get(
-            "io.dronefleet.mavlink.annotations",
+            MAVLINK_PACKAGE+ ".annotations",
             "MavlinkEntryInfo");
 
     private final PackageGenerator parentPackage;

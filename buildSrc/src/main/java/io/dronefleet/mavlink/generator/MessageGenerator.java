@@ -8,14 +8,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.dronefleet.mavlink.generator.ConstantUtil.MAVLINK_PACKAGE;
+
 public class MessageGenerator {
 
     private static final ClassName MAVLINK_MESSAGE_INFO = ClassName.get(
-            "io.dronefleet.mavlink.annotations",
+            MAVLINK_PACKAGE+ ".annotations",
             "MavlinkMessageInfo");
 
     private static final ClassName MAVLINK_MESSAGE_BUILDER = ClassName.get(
-            "io.dronefleet.mavlink.annotations",
+            MAVLINK_PACKAGE+ ".annotations",
             "MavlinkMessageBuilder");
 
     private final PackageGenerator parentPackage;
