@@ -1,7 +1,6 @@
 # This project is not actively maintained
-At present time and for a long while now, unfortunately, I have not been able to put time and love into `dronefleet/mavlink`. I may provide quick help within open issues, but it's hard to promise much more than that.
-
-If you maintain a fork of this project that's in reasonable condition for users to depend on, please open an issue and I'll link to your repository from this README.
+the fork update the gradle version, and add bit_mask mark to annotation, enum class, and add crc_extra for custom crc in the attribute of message.
+this is compatible to origin reposition. 
 
 # Overview
 A Java SDK for communication using the Mavlink1 and Mavlink2 protocols.
