@@ -111,7 +111,9 @@ public class ReflectionPayloadSerializer implements MavlinkPayloadSerializer {
     }
 
     private void write(double value, byte[] buffer, int offset, int length) {
-        if ((length - offset) != 8) throw new IllegalArgumentException("length != 8");
+        if ((length - offset) != 8) {
+            throw new IllegalArgumentException("length != 8");
+        }
         ByteBuffer.wrap(buffer)
                 .order(ByteOrder.LITTLE_ENDIAN)
                 .putDouble(offset, value);

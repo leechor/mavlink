@@ -50,7 +50,7 @@ public class ReflectionPayloadDeserializer implements MavlinkPayloadDeserializer
                         MavlinkFieldInfo field = method.getAnnotation(MavlinkFieldInfo.class);
 
                         int length = field.unitSize() * Math.max(field.arraySize(), 1);
-                        int offset = nextOffset.getAndAccumulate(length, (a, b) -> a + b);
+                        int offset = nextOffset.getAndAccumulate(length, Integer::sum);
 
                         byte[] data = new byte[length];
                         if (offset < payload.length) {

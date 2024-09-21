@@ -38,105 +38,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MavlinkConnection {
     /**
-     * Builds MavlinkConnection instances.
-     */
-    public static final class Builder {
-        private final InputStream in;
-        private final OutputStream out;
-        private final Map<MavAutopilot, MavlinkDialect> dialects;
-        private MavlinkDialect defaultDialect;
-
-        private Builder(InputStream in, OutputStream out) {
-            this.in = in;
-            this.out = out;
-            dialects = new HashMap<>();
-            dialect(MavAutopilot.MAV_AUTOPILOT_GENERIC, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_AEROB, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_AIRRAILS, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_UDB, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_SMARTAP, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_SMACCMPILOT, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_OPENPILOT, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_FP, new CommonDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, new ArdupilotmegaDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_PX4, new ArdupilotmegaDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_AUTOQUAD, new AutoquadDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_ASLUAV, new AsluavDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_SLUGS, new SlugsDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_AUTOQUAD, new AutoquadDialect())
-                    .dialect(MavAutopilot.MAV_AUTOPILOT_PPZ, new PaparazziDialect());
-            defaultDialect = COMMON_DIALECT;
-        }
-
-        /**
-         * Adds a dialect entry to this builder. The added dialect will then become supported
-         * by the built connection.
-         *
-         * @param autopilot The autopilot to associate the dialect with.
-         * @param dialect   The dialect to associate.
-         * @return This builder.
-         */
-        public Builder dialect(MavAutopilot autopilot, MavlinkDialect dialect) {
-            dialects.put(autopilot, dialect);
-            return this;
-        }
-
-        /**
-         * Sets the default dialect to be used by the built connection. The default dialect
-         * will be assumed for systems which did not yet send a
-         * {@link io.dronefleet.mavlink.minimal.Heartbeat heartbeat}.
-         *
-         * @param dialect The default dialect to use.
-         * @return This builder.
-         */
-        public Builder defaultDialect(MavlinkDialect dialect) {
-            defaultDialect = dialect;
-            return this;
-        }
-
-        /**
-         * Builds a ready to use connection instance.
-         */
-        public MavlinkConnection build() {
-            return new MavlinkConnection(
-                    new MavlinkPacketReader(in),
-                    out,
-                    dialects,
-                    defaultDialect,
-                    new ReflectionPayloadDeserializer(),
-                    new ReflectionPayloadSerializer()
-            );
-        }
-    }
-
-    /**
      * The default dialect for systems which have not yet been associated
      * with a specific dialect.
      */
     private static MavlinkDialect COMMON_DIALECT = new CommonDialect();
-
-    /**
-     * Creates a new builder for the specified input/output streams.
-     *
-     * @param in  The input stream to read messages from.
-     * @param out The output stream to write messages to.
-     * @return A builder instance for the specified settings.
-     */
-    public static Builder builder(InputStream in, OutputStream out) {
-        return new Builder(in, out);
-    }
-
-    /**
-     * Creates a default connection instance. The result of calling this method
-     * is equivalent to calling {@code builder(in,out).build()}.
-     *
-     * @param in  The input stream to read messages from.
-     * @param out The output stream to write messages to.
-     * @return A builder instance for the specified settings.
-     */
-    public static MavlinkConnection create(InputStream in, OutputStream out) {
-        return builder(in, out).build();
-    }
 
     /**
      * A mapping of system IDs and their dialects. Entries are added to this map
@@ -212,6 +117,29 @@ public class MavlinkConnection {
     }
 
     /**
+     * Creates a new builder for the specified input/output streams.
+     *
+     * @param in  The input stream to read messages from.
+     * @param out The output stream to write messages to.
+     * @return A builder instance for the specified settings.
+     */
+    public static Builder builder(InputStream in, OutputStream out) {
+        return new Builder(in, out);
+    }
+
+    /**
+     * Creates a default connection instance. The result of calling this method
+     * is equivalent to calling {@code builder(in,out).build()}.
+     *
+     * @param in  The input stream to read messages from.
+     * @param out The output stream to write messages to.
+     * @return A builder instance for the specified settings.
+     */
+    public static MavlinkConnection create(InputStream in, OutputStream out) {
+        return builder(in, out).build();
+    }
+
+    /**
      * <p>Reads a single message from this connection. This method drops messages, attempting to read the next
      * message when given the following conditions:</p>
      * <p>
@@ -232,7 +160,7 @@ public class MavlinkConnection {
      * @throws EOFException When the stream ends.
      * @throws IOException  If there has been an error reading from the stream.
      */
-    public MavlinkMessage next() throws IOException {
+    public MavlinkMessage<Object> next() throws IOException {
         readLock.lock();
         try {
             MavlinkPacket packet;
@@ -249,12 +177,9 @@ public class MavlinkConnection {
                         }
                     }
                     if (packet.isMavlink2()) {
-                        //noinspection unchecked
-                        return new Mavlink2Message(packet, payload);
-                    } else {
-                        //noinspection unchecked
-                        return new MavlinkMessage(packet, payload);
+                        return new Mavlink2Message<>(packet, payload);
                     }
+                    return new MavlinkMessage<>(packet, payload);
                 } else {
                     reader.drop();
                 }
@@ -409,4 +334,77 @@ public class MavlinkConnection {
         }
         return null;
     }
+
+    /**
+     * Builds MavlinkConnection instances.
+     */
+    public static final class Builder {
+        private final InputStream in;
+        private final OutputStream out;
+        private final Map<MavAutopilot, MavlinkDialect> dialects;
+        private MavlinkDialect defaultDialect;
+
+        private Builder(InputStream in, OutputStream out) {
+            this.in = in;
+            this.out = out;
+            dialects = new HashMap<>();
+            dialect(MavAutopilot.MAV_AUTOPILOT_GENERIC, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_AEROB, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_AIRRAILS, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_UDB, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_SMARTAP, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_SMACCMPILOT, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_OPENPILOT, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_FP, new CommonDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, new ArdupilotmegaDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_PX4, new ArdupilotmegaDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_AUTOQUAD, new AutoquadDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_ASLUAV, new AsluavDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_SLUGS, new SlugsDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_AUTOQUAD, new AutoquadDialect())
+                    .dialect(MavAutopilot.MAV_AUTOPILOT_PPZ, new PaparazziDialect());
+            defaultDialect = COMMON_DIALECT;
+        }
+
+        /**
+         * Adds a dialect entry to this builder. The added dialect will then become supported
+         * by the built connection.
+         *
+         * @param autopilot The autopilot to associate the dialect with.
+         * @param dialect   The dialect to associate.
+         * @return This builder.
+         */
+        public Builder dialect(MavAutopilot autopilot, MavlinkDialect dialect) {
+            dialects.put(autopilot, dialect);
+            return this;
+        }
+
+        /**
+         * Sets the default dialect to be used by the built connection. The default dialect
+         * will be assumed for systems which did not yet send a
+         * {@link io.dronefleet.mavlink.minimal.Heartbeat heartbeat}.
+         *
+         * @param dialect The default dialect to use.
+         * @return This builder.
+         */
+        public Builder defaultDialect(MavlinkDialect dialect) {
+            defaultDialect = dialect;
+            return this;
+        }
+
+        /**
+         * Builds a ready to use connection instance.
+         */
+        public MavlinkConnection build() {
+            return new MavlinkConnection(
+                    new MavlinkPacketReader(in),
+                    out,
+                    dialects,
+                    defaultDialect,
+                    new ReflectionPayloadDeserializer(),
+                    new ReflectionPayloadSerializer()
+            );
+        }
+    }
+
 }
