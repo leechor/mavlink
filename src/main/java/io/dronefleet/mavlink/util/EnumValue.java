@@ -47,8 +47,8 @@ public class EnumValue<T extends Enum<T>> {
     public static <T extends Enum<T>> EnumValue<T> create(Class<T> enumType, int value) {
         return new EnumValue<>(
                 value,
-                Objects.requireNonNull(MavlinkReflection.getEntryByValue(enumType, value)
-                        .orElse(null)));
+                MavlinkReflection.getEntryByValue(enumType, value)
+                        .orElse(null));
     }
 
     public boolean flagsEnabled(Enum<T>... flags) {
