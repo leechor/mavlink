@@ -14,15 +14,15 @@ public class EnumValue<T extends Enum<T>> {
 
     private final int value;
     private final T entry;
-    private final Class<?> entryClass;
+    private final Class<T> entryClass;
 
     private EnumValue(int value, T entry) {
         this.value = value;
         this.entry = entry;
-        this.entryClass = entry != null ? entry.getClass() : null;
+        this.entryClass = entry != null ? (Class<T>)entry.getClass() : null;
     }
 
-    private EnumValue(int value, T entry, Class<?> entryClass) {
+    private EnumValue(int value, T entry, Class<T> entryClass) {
         this.value = value;
         this.entry = entry;
         this.entryClass = entryClass;
@@ -71,7 +71,7 @@ public class EnumValue<T extends Enum<T>> {
             throw new IllegalArgumentException("Enum type is not a bitmask");
         }
 
-        List<T> allEntries = MavlinkReflection.getEntries((Class<T>)value.getEntryClass());
+        List<T> allEntries = MavlinkReflection.getEntries(value.getEntryClass());
         return allEntries.stream()
                 .filter(entry -> {
                     int entryValue = MavlinkReflection.getEnumValue(entry);
@@ -135,7 +135,7 @@ public class EnumValue<T extends Enum<T>> {
         return entry;
     }
 
-    public Class<?> getEntryClass() {
+    public Class<T> getEntryClass() {
         return entryClass;
     }
 
