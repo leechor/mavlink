@@ -6,16 +6,26 @@ import io.dronefleet.mavlink.util.reflection.MavlinkReflection;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class EnumValue<T extends Enum<T>> {
 
     private final int value;
     private final T entry;
+    private final Class<?> entryClass;
 
     private EnumValue(int value, T entry) {
         this.value = value;
         this.entry = entry;
+        this.entryClass = entry != null ? entry.getClass() : null;
+    }
+
+    private EnumValue(int value, T entry, Class<?> entryClass) {
+        this.value = value;
+        this.entry = entry;
+        this.entryClass = entryClass;
     }
 
     public static  boolean isBitmask(Class<?> entryClass) {
@@ -34,10 +44,15 @@ public class EnumValue<T extends Enum<T>> {
     }
 
     public static <T extends Enum<T>> EnumValue<T> create(Collection<Enum<T>> flags) {
-        return create(flags.stream()
+        return create((Class<T>)flags.stream()
+                .map(Enum::getClass)
+                .findFirst()
+                .orElse(null),
+                flags.stream()
                 .mapToInt(MavlinkReflection::getEnumValue)
                 .reduce((bitmask, value) -> bitmask | value)
                 .orElse(0));
+
     }
 
     public static <T extends Enum<T>> EnumValue<T> create(int value) {
@@ -48,7 +63,21 @@ public class EnumValue<T extends Enum<T>> {
         return new EnumValue<>(
                 value,
                 MavlinkReflection.getEntryByValue(enumType, value)
-                        .orElse(null));
+                        .orElse(null), enumType);
+    }
+
+    public static <T extends Enum<T>> List<T> decompose(EnumValue<T> value) {
+        if(!isBitmask(value.getEntryClass())) {
+            throw new IllegalArgumentException("Enum type is not a bitmask");
+        }
+
+        List<T> allEntries = MavlinkReflection.getEntries((Class<T>)value.getEntryClass());
+        return allEntries.stream()
+                .filter(entry -> {
+                    int entryValue = MavlinkReflection.getEnumValue(entry);
+                    return (value.value & entryValue) == entryValue;
+                })
+                .collect(Collectors.toList());
     }
 
     public boolean flagsEnabled(Enum<T>... flags) {
@@ -104,6 +133,10 @@ public class EnumValue<T extends Enum<T>> {
 
     public T entry() {
         return entry;
+    }
+
+    public Class<?> getEntryClass() {
+        return entryClass;
     }
 
     //endregion

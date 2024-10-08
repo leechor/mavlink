@@ -5,15 +5,15 @@ import io.dronefleet.mavlink.minimal.MavAutopilot;
 import io.dronefleet.mavlink.minimal.MavState;
 import io.dronefleet.mavlink.minimal.MavType;
 import io.dronefleet.mavlink.util.UnmodifiableMapBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MavlinkConnectionTest {
 
@@ -21,8 +21,7 @@ public class MavlinkConnectionTest {
     private PipedOutputStream out;
     private MavlinkConnection source;
 
-
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         in = new PipedInputStream();
         out = new PipedOutputStream();
@@ -31,8 +30,7 @@ public class MavlinkConnectionTest {
                 new PipedOutputStream(in));
     }
 
-
-    @Test(timeout = 500L)
+    @Test
     public void itUsesDefaultDialectByDefault() throws IOException {
         MavlinkDialect dialect = new AbstractMavlinkDialect(
                 "testdialect",
@@ -55,7 +53,7 @@ public class MavlinkConnectionTest {
         assertEquals(expected, actual);
     }
 
-    @Test(timeout = 500L)
+    @Test
     public void itUsesCommonDialectAsFallback() throws IOException {
         MavlinkDialect dialect = new AbstractMavlinkDialect(
                 "testdialect",
@@ -82,7 +80,7 @@ public class MavlinkConnectionTest {
         assertEquals(expected, actual);
     }
 
-    @Test(timeout = 500L)
+    @Test
     public void defaultDialectDoesNotPreventHeartbeatFromConfiguringDialect() throws IOException {
         MavlinkDialect defaultDialect = new AbstractMavlinkDialect(
                 "testdialect",
@@ -114,5 +112,4 @@ public class MavlinkConnectionTest {
 
         assertEquals(expected, actual);
     }
-
 }

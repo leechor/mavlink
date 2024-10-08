@@ -4,15 +4,15 @@ import io.dronefleet.mavlink.common.MavMissionResult;
 import io.dronefleet.mavlink.common.MavMissionType;
 import io.dronefleet.mavlink.common.MissionAck;
 import io.dronefleet.mavlink.util.EnumValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TruncatedMessageTests {
 
-    private final ReflectionPayloadDeserializer deserializer= new ReflectionPayloadDeserializer();
+    private final ReflectionPayloadDeserializer deserializer = new ReflectionPayloadDeserializer();
 
     @Test
     public void testTruncatedPayloadDeserialization() {

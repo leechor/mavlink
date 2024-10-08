@@ -5,7 +5,9 @@ import io.dronefleet.mavlink.annotations.MavlinkMessageInfo;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MavlinkReflection {
     private MavlinkReflection() {
@@ -34,6 +36,10 @@ public class MavlinkReflection {
     }
 
     public static <T extends Enum<?>> Optional<T> getEntryByValue(Class<T> enumType, int value) {
+        if (enumType == null) {
+            return Optional.empty();
+        }
+
         return Arrays.stream(enumType.getFields())
                 .filter(Field::isEnumConstant)
                 .filter(f -> f.isAnnotationPresent(MavlinkEntryInfo.class))
@@ -47,6 +53,21 @@ public class MavlinkReflection {
                 })
                 .map(enumType::cast)
                 .findFirst();
+    }
+
+    public static <T extends Enum<?>> List<T> getEntries(Class<T> enumType) {
+        return Arrays.stream(enumType.getFields())
+                .filter(Field::isEnumConstant)
+                .filter(f -> f.isAnnotationPresent(MavlinkEntryInfo.class))
+                .map(f -> {
+                    try {
+                        return f.get(null);
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalStateException(e);
+                    }
+                })
+                .map(enumType::cast)
+                .collect(Collectors.toList());
     }
 
     public static boolean isMavlinkMessage(Object o) {
