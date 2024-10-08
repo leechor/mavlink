@@ -44,10 +44,11 @@ public class EnumValue<T extends Enum<T>> {
     }
 
     public static <T extends Enum<T>> EnumValue<T> create(Collection<Enum<T>> flags) {
-        return create((Class<T>)flags.stream()
+        Class<T> entryClass = (Class<T>)flags.stream()
                 .map(Enum::getClass)
                 .findFirst()
-                .orElse(null),
+                .orElse(null);
+        return create(entryClass,
                 flags.stream()
                 .mapToInt(MavlinkReflection::getEnumValue)
                 .reduce((bitmask, value) -> bitmask | value)
