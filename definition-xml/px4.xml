@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<mavlink>
+    <include>ardupilotmega.xml</include>
+    <messages>
+        <message id="22" name="PX4_PARAM_VALUE" crc_extra="220">
+            <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+            <field type="float" name="param_value">Onboard parameter value</field>
+            <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+            <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+            <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+            <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+        </message>
+        <message id="23" name="PX4_PARAM_SET" crc_extra="168">
+            <description>Set a parameter value (write new value to permanent storage).
+                The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+                PARAM_SET may also be called within the context of a transaction (started with MAV_CMD_PARAM_TRANSACTION). Within a transaction the receiving component should respond with PARAM_ACK_TRANSACTION to the setter component (instead of broadcasting PARAM_VALUE), and PARAM_SET should be re-sent if this is ACK not received.</description>
+            <field type="float" name="param_value">Onboard parameter value</field>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+            <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+            <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+        </message>
+        <message id="39" name="PX4_MISSION_ITEM" crc_extra="254">
+            <description>Message encoding a mission item. This message is emitted to announce
+                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN may be used to indicate an optional/default value (e.g. to use the system's current latitude or yaw rather than a specific value). See also https://mavlink.io/en/services/mission.html.</description>
+            <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
+            <field type="float" name="param2">PARAM2, see MAV_CMD enum</field>
+            <field type="float" name="param3">PARAM3, see MAV_CMD enum</field>
+            <field type="float" name="param4">PARAM4, see MAV_CMD enum</field>
+            <field type="float" name="x">PARAM5 / local: X coordinate, global: latitude</field>
+            <field type="float" name="y">PARAM6 / local: Y coordinate, global: longitude</field>
+            <field type="float" name="z">PARAM7 / local: Z coordinate, global: altitude (relative or absolute, depending on frame).</field>
+            <field type="uint16_t" name="seq">Sequence</field>
+            <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint.</field>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+            <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint.</field>
+            <field type="uint8_t" name="current">false:0, true:1</field>
+            <field type="uint8_t" name="autocontinue">Autocontinue to next waypoint. 0: false, 1: true. Set false to pause mission after the item completes.</field>
+        </message>
+        <message id="40" name="PX4_MISSION_REQUEST" crc_extra="230">
+            <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. https://mavlink.io/en/services/mission.html</description>
+            <field type="uint16_t" name="seq">Sequence</field>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+        </message>
+        <message id="43" name="PX4_MISSION_REQUEST_LIST" crc_extra="132">
+            <description>Request the overall list of mission items from the system/component.</description>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+        </message>
+        <message id="44" name="PX4_MISSION_COUNT" crc_extra="221">
+            <description>This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.</description>
+            <field type="uint16_t" name="count">Number of mission items in the sequence</field>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+        </message>
+        <message id="47" name="PX4_MISSION_ACK" crc_extra="153">
+            <description>Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).</description>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+            <field type="uint8_t" name="type" enum="MAV_MISSION_RESULT">Mission result.</field>
+        </message>
+        <message id="51" name="PX4_MISSION_REQUEST_INT" crc_extra="196">
+            <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/services/mission.html</description>
+            <field type="uint16_t" name="seq">Sequence</field>
+            <field type="uint8_t" name="target_system">System ID</field>
+            <field type="uint8_t" name="target_component">Component ID</field>
+        </message>
+        <message id="76" name="PX4_COMMAND_LONG" crc_extra="152">
+            <description>Send a command with up to seven parameters to the MAV. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+            <field type="float" name="param1" invalid="NaN">Parameter 1 (for the specific command).</field>
+            <field type="float" name="param2" invalid="NaN">Parameter 2 (for the specific command).</field>
+            <field type="float" name="param3" invalid="NaN">Parameter 3 (for the specific command).</field>
+            <field type="float" name="param4" invalid="NaN">Parameter 4 (for the specific command).</field>
+            <field type="float" name="param5" invalid="NaN">Parameter 5 (for the specific command).</field>
+            <field type="float" name="param6" invalid="NaN">Parameter 6 (for the specific command).</field>
+            <field type="float" name="param7" invalid="NaN">Parameter 7 (for the specific command).</field>
+            <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of command to send).</field>
+            <field type="uint8_t" name="target_system">System which should execute the command</field>
+            <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+            <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+        </message>
+    </messages>
+</mavlink>
