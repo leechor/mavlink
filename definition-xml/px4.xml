@@ -1,7 +1,38 @@
 <?xml version="1.0"?>
 <mavlink>
     <include>ardupilotmega.xml</include>
+    <enums>
+        <enum name="PX4_CUSTOM_MAIN_MODE">
+            <entry value="1" name="PX4_CUSTOM_MAIN_MODE_MANUAL">MANUAL</entry>
+            <entry value="2" name="PX4_CUSTOM_MAIN_MODE_ALTCTL">ALTCTL</entry>
+            <entry value="3" name="PX4_CUSTOM_MAIN_MODE_POSCTL">POSCTL</entry>
+            <entry value="4" name="PX4_CUSTOM_MAIN_MODE_AUTO">AUTO</entry>
+            <entry value="5" name="PX4_CUSTOM_MAIN_MODE_ACRO">ACRO</entry>
+            <entry value="6" name="PX4_CUSTOM_MAIN_MODE_OFFBOARD">OFFBOARD</entry>
+            <entry value="7" name="PX4_CUSTOM_MAIN_MODE_STABILIZED">STABILIZED</entry>
+            <entry value="8" name="PX4_CUSTOM_MAIN_MODE_RATTITUDE">RATTITUDE</entry>
+        </enum>
+        <enum name="PX4_CUSTOM_SUB_MODE_AUTO">
+            <entry value="0" name="PX4_CUSTOM_SUB_MODE_UNKNOWN">UNKNOWN</entry>
+            <entry value="1" name="PX4_CUSTOM_SUB_MODE_AUTO_READY">READY</entry>
+            <entry value="2" name="PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF">TAKEOFF</entry>
+            <entry value="3" name="PX4_CUSTOM_SUB_MODE_AUTO_LOITER">LOITER</entry>
+            <entry value="4" name="PX4_CUSTOM_SUB_MODE_AUTO_MISSION">MISSION</entry>
+            <entry value="5" name="PX4_CUSTOM_SUB_MODE_AUTO_RTL">RTL</entry>
+            <entry value="6" name="PX4_CUSTOM_SUB_MODE_AUTO_LAND">LAND</entry>
+            <entry value="7" name="PX4_CUSTOM_SUB_MODE_AUTO_RTGS">RTGS</entry>
+            <entry value="8" name="PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET">FOLLOW_TARGET</entry>
+        </enum>
+    </enums>
     <messages>
+        <message id="11" name="PX4_SET_MODE" crc_extra="89">
+            <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
+            <field type="uint16_t" name="reserved" >The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
+            <field type="uint8_t" name="main_mode" enum="PX4_CUSTOM_MAIN_MODE">The system setting the mode</field>
+            <field type="uint8_t" name="sub_mode" enum="PX4_CUSTOM_SUB_MODE_AUTO">The new base mode.</field>
+            <field type="uint8_t" name="target_system">The system setting the mode</field>
+            <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">The new base mode.</field>
+        </message>
         <message id="22" name="PX4_PARAM_VALUE" crc_extra="220">
             <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
             <field type="float" name="param_value">Onboard parameter value</field>
