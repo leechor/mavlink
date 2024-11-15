@@ -25,6 +25,31 @@
         </enum>
     </enums>
     <messages>
+        <message id="0" name="PX4_HEARTBEAT" crc_extra="50">
+            <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
+            <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+            <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
+            <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
+            <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+            <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
+            <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+        </message>
+        <message id="1" name="PX4_SYS_STATUS" crc_extra="124">
+            <description>The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occurred. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occurred it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.</description>
+            <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
+            <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
+            <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+            <field type="uint16_t" name="load" units="d%">Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</field>
+            <field type="uint16_t" name="voltage_battery" units="mV" invalid="UINT16_MAX">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
+            <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: Current not sent by autopilot</field>
+            <field type="uint16_t" name="drop_rate_comm" units="c%">Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+            <field type="uint16_t" name="errors_comm">Communication errors (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+            <field type="uint16_t" name="errors_count1">Autopilot-specific errors</field>
+            <field type="uint16_t" name="errors_count2">Autopilot-specific errors</field>
+            <field type="uint16_t" name="errors_count3">Autopilot-specific errors</field>
+            <field type="uint16_t" name="errors_count4">Autopilot-specific errors</field>
+            <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
+        </message>
         <message id="11" name="PX4_SET_MODE" crc_extra="89">
             <description>Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.</description>
             <field type="uint16_t" name="reserved" >The new autopilot-specific mode. This field can be ignored by an autopilot.</field>
@@ -50,6 +75,47 @@
             <field type="uint8_t" name="target_component">Component ID</field>
             <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
             <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+        </message>
+        <message id="24" name="PX4_GPS_RAW_INT" crc_extra="24">
+            <description>The global position, as returned by the Global Positioning System (GPS). This is
+                NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION_INT for the global position estimate.</description>
+            <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+            <field type="int32_t" name="lat" units="degE7">Latitude (WGS84, EGM96 ellipsoid)</field>
+            <field type="int32_t" name="lon" units="degE7">Longitude (WGS84, EGM96 ellipsoid)</field>
+            <field type="int32_t" name="alt" units="mm">Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to the WGS84 altitude.</field>
+            <field type="uint16_t" name="eph" invalid="UINT16_MAX">GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+            <field type="uint16_t" name="epv" invalid="UINT16_MAX">GPS VDOP vertical dilution of position (unitless * 100). If unknown, set to: UINT16_MAX</field>
+            <field type="uint16_t" name="vel" units="cm/s" invalid="UINT16_MAX">GPS ground speed. If unknown, set to: UINT16_MAX</field>
+            <field type="uint16_t" name="cog" units="cdeg" invalid="UINT16_MAX">Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+            <field type="uint8_t" name="fix_type" enum="GPS_FIX_TYPE">GPS fix type.</field>
+            <field type="uint8_t" name="satellites_visible" invalid="UINT8_MAX">Number of satellites visible. If unknown, set to UINT8_MAX</field>
+        </message>
+        <message id="35" name="PX4_RC_CHANNELS_RAW">
+            <description>The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+            <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value.</field>
+            <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value.</field>
+            <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value.</field>
+            <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value.</field>
+            <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value.</field>
+            <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value.</field>
+            <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value.</field>
+            <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value.</field>
+            <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
+            <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+        </message>
+        <message id="36" name="PX4_SERVO_OUTPUT_RAW" crc_extra="222">
+            <description>Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.</description>
+            <field type="uint32_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+            <field type="uint16_t" name="servo1_raw" units="us">Servo output 1 value</field>
+            <field type="uint16_t" name="servo2_raw" units="us">Servo output 2 value</field>
+            <field type="uint16_t" name="servo3_raw" units="us">Servo output 3 value</field>
+            <field type="uint16_t" name="servo4_raw" units="us">Servo output 4 value</field>
+            <field type="uint16_t" name="servo5_raw" units="us">Servo output 5 value</field>
+            <field type="uint16_t" name="servo6_raw" units="us">Servo output 6 value</field>
+            <field type="uint16_t" name="servo7_raw" units="us">Servo output 7 value</field>
+            <field type="uint16_t" name="servo8_raw" units="us">Servo output 8 value</field>
+            <field type="uint8_t" name="port">Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.</field>
         </message>
         <message id="39" name="PX4_MISSION_ITEM" crc_extra="254">
             <description>Message encoding a mission item. This message is emitted to announce
@@ -98,6 +164,39 @@
             <field type="uint8_t" name="target_system">System ID</field>
             <field type="uint8_t" name="target_component">Component ID</field>
         </message>
+        <message id="65" name="PX4_RC_CHANNELS" crc_extra="118">
+            <description>The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.  A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+            <field type="uint16_t" name="chan1_raw" units="us" invalid="UINT16_MAX">RC channel 1 value.</field>
+            <field type="uint16_t" name="chan2_raw" units="us" invalid="UINT16_MAX">RC channel 2 value.</field>
+            <field type="uint16_t" name="chan3_raw" units="us" invalid="UINT16_MAX">RC channel 3 value.</field>
+            <field type="uint16_t" name="chan4_raw" units="us" invalid="UINT16_MAX">RC channel 4 value.</field>
+            <field type="uint16_t" name="chan5_raw" units="us" invalid="UINT16_MAX">RC channel 5 value.</field>
+            <field type="uint16_t" name="chan6_raw" units="us" invalid="UINT16_MAX">RC channel 6 value.</field>
+            <field type="uint16_t" name="chan7_raw" units="us" invalid="UINT16_MAX">RC channel 7 value.</field>
+            <field type="uint16_t" name="chan8_raw" units="us" invalid="UINT16_MAX">RC channel 8 value.</field>
+            <field type="uint16_t" name="chan9_raw" units="us" invalid="UINT16_MAX">RC channel 9 value.</field>
+            <field type="uint16_t" name="chan10_raw" units="us" invalid="UINT16_MAX">RC channel 10 value.</field>
+            <field type="uint16_t" name="chan11_raw" units="us" invalid="UINT16_MAX">RC channel 11 value.</field>
+            <field type="uint16_t" name="chan12_raw" units="us" invalid="UINT16_MAX">RC channel 12 value.</field>
+            <field type="uint16_t" name="chan13_raw" units="us" invalid="UINT16_MAX">RC channel 13 value.</field>
+            <field type="uint16_t" name="chan14_raw" units="us" invalid="UINT16_MAX">RC channel 14 value.</field>
+            <field type="uint16_t" name="chan15_raw" units="us" invalid="UINT16_MAX">RC channel 15 value.</field>
+            <field type="uint16_t" name="chan16_raw" units="us" invalid="UINT16_MAX">RC channel 16 value.</field>
+            <field type="uint16_t" name="chan17_raw" units="us" invalid="UINT16_MAX">RC channel 17 value.</field>
+            <field type="uint16_t" name="chan18_raw" units="us" invalid="UINT16_MAX">RC channel 18 value.</field>
+            <field type="uint8_t" name="chancount">Total number of RC channels being received. This can be larger than 18, indicating that more channels are available but not given in this message. This value should be 0 when no RC channels are available.</field>
+            <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+        </message>
+        <message id="74" name="PX4_VFR_HUD" crc_extra="20">
+            <description>Metrics typically displayed on a HUD for fixed wing aircraft.</description>
+            <field type="float" name="airspeed" units="m/s">Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.</field>
+            <field type="float" name="groundspeed" units="m/s">Current ground speed.</field>
+            <field type="float" name="alt" units="m">Current altitude (MSL).</field>
+            <field type="float" name="climb" units="m/s">Current climb rate.</field>
+            <field type="int16_t" name="heading" units="deg">Current heading in compass units (0-360, 0=north).</field>
+            <field type="uint16_t" name="throttle" units="%">Current throttle setting (0 to 100).</field>
+        </message>
         <message id="76" name="PX4_COMMAND_LONG" crc_extra="152">
             <description>Send a command with up to seven parameters to the MAV. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
             <field type="float" name="param1" invalid="NaN">Parameter 1 (for the specific command).</field>
@@ -111,6 +210,84 @@
             <field type="uint8_t" name="target_system">System which should execute the command</field>
             <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
             <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+        </message>
+        <message id="83" name="PX4_ATTITUDE_TARGET" crc_extra="22">
+            <description>Reports the current commanded attitude of the vehicle as specified by the autopilot. This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle is being controlled this way.</description>
+            <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+            <field type="float[4]" name="q">Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+            <field type="float" name="body_roll_rate" units="rad/s">Body roll rate</field>
+            <field type="float" name="body_pitch_rate" units="rad/s">Body pitch rate</field>
+            <field type="float" name="body_yaw_rate" units="rad/s">Body yaw rate</field>
+            <field type="float" name="thrust">Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust)</field>
+            <field type="uint8_t" name="type_mask" enum="ATTITUDE_TARGET_TYPEMASK" display="bitmask">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+        </message>
+        <message id="109" name="PX4_RADIO_STATUS">
+            <description>Status generated by radio and injected into MAVLink stream.</description>
+            <field type="uint16_t" name="rxerrors">Count of radio packet receive errors (since boot).</field>
+            <field type="uint16_t" name="fixed">Count of error corrected radio packets (since boot).</field>
+            <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Local (message sender) received signal strength indication in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+            <field type="uint8_t" name="remrssi" invalid="UINT8_MAX">Remote (message receiver) signal strength indication in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+            <field type="uint8_t" name="txbuf" units="%">Remaining free transmitter buffer space.</field>
+            <field type="uint8_t" name="noise" invalid="UINT8_MAX">Local background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+            <field type="uint8_t" name="remnoise" invalid="UINT8_MAX">Remote background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+        </message>
+        <message id="140" name="PX4_ACTUATOR_CONTROL_TARGET" crc_extra="181">
+            <description>Set the vehicle attitude and body angular rates.</description>
+            <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+            <field type="float[8]" name="controls">Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for single rotation direction motors is 0..1, negative range for reverse direction. Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch, yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through mixer to repurpose them as generic outputs.</field>
+            <field type="uint8_t" name="group_mlx">Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.</field>
+        </message>
+        <message id="147" name="PX4_BATTERY_STATUS" crc_extra="154">
+            <description>Battery information. Updates GCS with flight controller battery status. Smart batteries also use this message, but may additionally send SMART_BATTERY_INFO.</description>
+            <field type="int32_t" name="current_consumed" units="mAh" invalid="-1">Consumed charge, -1: autopilot does not provide consumption estimate</field>
+            <field type="int32_t" name="energy_consumed" units="hJ" invalid="-1">Consumed energy, -1: autopilot does not provide energy consumption estimate</field>
+            <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature of the battery. INT16_MAX for unknown temperature.</field>
+            <field type="uint16_t[10]" name="voltages" units="mV" invalid="[UINT16_MAX]">Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell count for this battery should have the UINT16_MAX value. If individual cell voltages are unknown or not measured for this battery, then the overall battery voltage should be filled in cell 0, with all others set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining voltage. This can be extended to multiple cells if the total voltage is greater than 2 * (UINT16_MAX - 1).</field>
+            <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: autopilot does not measure the current</field>
+            <field type="uint8_t" name="id" instance="true">Battery ID</field>
+            <field type="uint8_t" name="battery_function" enum="MAV_BATTERY_FUNCTION">Function of the battery</field>
+            <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
+            <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
+        </message>
+        <message id="148" name="PX4_AUTOPILOT_VERSION">
+            <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
+            <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Bitmap of capabilities</field>
+            <field type="uint64_t" name="uid">UID if provided by hardware (see uid2)</field>
+            <field type="uint32_t" name="flight_sw_version">Firmware version number</field>
+            <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
+            <field type="uint32_t" name="os_sw_version">Operating system version number</field>
+            <field type="uint32_t" name="board_version">HW / board version (last 8 bits should be silicon ID, if any). The first 16 bits of this field specify https://github.com/PX4/PX4-Bootloader/blob/master/board_types.txt</field>
+            <field type="uint16_t" name="vendor_id">ID of the board vendor</field>
+            <field type="uint16_t" name="product_id">ID of the product</field>
+            <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+            <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+        </message>
+        <message id="253" name="PX4_STATUS_TEXT" crc_extra="215">
+            <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+            <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
+            <field type="char[100]" name="text">Status text message, without null termination character</field>
+        </message>
+        <message id="242" name="PX4_HOME_POSITION">
+            <description>
+                Contains the home position.
+                The home position is the default position that the system will return to and land on.
+                The position must be set automatically by the system during the takeoff, and may also be explicitly set using MAV_CMD_DO_SET_HOME.
+                The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface.
+                Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach.
+                The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+                Note: this message can be requested by sending the MAV_CMD_REQUEST_MESSAGE with param1=242 (or the deprecated MAV_CMD_GET_HOME_POSITION command).
+            </description>
+            <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
+            <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
+            <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+            <field type="float" name="x" units="m">Local X position of this position in the local coordinate frame (NED)</field>
+            <field type="float" name="y" units="m">Local Y position of this position in the local coordinate frame (NED)</field>
+            <field type="float" name="z" units="m">Local Z position of this position in the local coordinate frame (NED: positive "down")</field>
+            <field type="float[4]" name="q">World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground</field>
+            <field type="float" name="approach_x" units="m">Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+            <field type="float" name="approach_y" units="m">Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
+            <field type="float" name="approach_z" units="m">Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.</field>
         </message>
     </messages>
 </mavlink>
