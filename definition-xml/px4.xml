@@ -268,7 +268,7 @@
             <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
             <field type="char[100]" name="text">Status text message, without null termination character</field>
         </message>
-        <message id="242" name="PX4_HOME_POSITION">
+        <message id="242" name="PX4_HOME_POSITION" crc_extra="104">
             <description>
                 Contains the home position.
                 The home position is the default position that the system will return to and land on.
