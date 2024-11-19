@@ -59,6 +59,8 @@ public class ReflectionPayloadDeserializer implements MavlinkPayloadDeserializer
                                     0
                             );
                             System.arraycopy(payload, offset, data, 0, copyLength);
+                        }else if (field.extension()){
+                            return;
                         }
 
                         Type fieldType = Optional.of(method.getGenericParameterTypes())
