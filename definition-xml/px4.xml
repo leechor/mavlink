@@ -249,7 +249,7 @@
             <field type="uint8_t" name="type" enum="MAV_BATTERY_TYPE">Type (chemistry) of the battery</field>
             <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.</field>
         </message>
-        <message id="148" name="PX4_AUTOPILOT_VERSION">
+        <message id="148" name="PX4_AUTOPILOT_VERSION" crc_extra="178">
             <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
             <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Bitmap of capabilities</field>
             <field type="uint64_t" name="uid">UID if provided by hardware (see uid2)</field>
