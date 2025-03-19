@@ -2,6 +2,10 @@
 <mavlink>
     <include>ardupilotmega.xml</include>
     <enums>
+        <enum name="PX4_MAVLINK_MSG_ID_CHANGE_MODE_ACTION">
+            <entry value="0" name="PX4_CHANGE_MODE_ACTION_TAKEOFF">takeoff</entry>
+            <entry value="1" name="PX4_CHANGE_MODE_ACTION_RTL">RTL</entry>
+        </enum>
         <enum name="PX4_CUSTOM_MAIN_MODE">
             <entry value="1" name="PX4_CUSTOM_MAIN_MODE_MANUAL">MANUAL</entry>
             <entry value="2" name="PX4_CUSTOM_MAIN_MODE_ALTCTL">ALTCTL</entry>
@@ -262,6 +266,10 @@
             <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
             <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
             <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+        </message>
+        <message id="203" name="Px4_MAVLINK_MSG_ID_CHANGE_MODE" crc_extra="230">
+            <field type="uint8_t" name="target_system">The system setting the mode</field>
+            <field type="uint8_t" name="action" enum="PX4_MAVLINK_MSG_ID_CHANGE_MODE_ACTION">0:Takeoff;1:RTL</field>
         </message>
         <message id="253" name="PX4_STATUS_TEXT" crc_extra="215">
             <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
