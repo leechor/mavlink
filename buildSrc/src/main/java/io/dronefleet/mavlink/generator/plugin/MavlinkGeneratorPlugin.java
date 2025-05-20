@@ -6,7 +6,7 @@ import org.gradle.api.Project;
 public class MavlinkGeneratorPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
-        project.getTasks().create(
+        project.getTasks().register(
                 "generateDialect",
                 MavlinkGeneratorTask.class);
 
