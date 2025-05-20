@@ -117,3 +117,4 @@ secring.gpg
 classes/
 
 /src/main/java-gen/
+.DS_Store
